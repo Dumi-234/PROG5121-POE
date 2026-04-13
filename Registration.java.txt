@@ -1,0 +1,163 @@
+import java.util.Scanner;
+
+class UserAccount {
+    
+    private String savedUsername;
+    private String savedPassword;
+    private String savedPhoneNumber;
+    
+    // Validate username format
+    public boolean validateUsername(String username) {
+        boolean hasUnderscore = username.indexOf('_') != -1;
+        boolean isShortEnough = username.length() <= 5;
+        return hasUnderscore && isShortEnough;
+    }
+    
+    // Validate password strength (manual check, no regex)
+    public boolean validatePassword(String password) {
+        
+        if (password.length() < 8) {
+            return false;
+        }
+        
+        boolean containsUpper = false;
+        boolean containsDigit = false;
+        boolean containsSpecial = false;
+        
+        for (int position = 0; position < password.length(); position++) {
+            char currentChar = password.charAt(position);
+            
+            if (currentChar >= 'A' && currentChar <= 'Z') {
+                containsUpper = true;
+            }
+            else if (currentChar >= '0' && currentChar <= '9') {
+                containsDigit = true;
+            }
+            else if (!((currentChar >= 'a' && currentChar <= 'z') || 
+                       (currentChar >= 'A' && currentChar <= 'Z') || 
+                       (currentChar >= '0' && currentChar <= '9'))) {
+                containsSpecial = true;
+            }
+        }
+        
+        return containsUpper && containsDigit && containsSpecial;
+    }
+    
+    // Validate South African phone number format
+    public boolean validatePhoneNumber(String phoneNumber) {
+        
+        if (!phoneNumber.substring(0, 3).equals("+27")) {
+            return false;
+        }
+        
+        if (phoneNumber.length() != 12) {
+            return false;
+        }
+        
+        for (int idx = 3; idx < phoneNumber.length(); idx++) {
+            char digit = phoneNumber.charAt(idx);
+            if (digit < '0' || digit > '9') {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    // Handle new user registration
+    public void createAccount(Scanner input) {
+        
+        System.out.println("=== CREATE NEW ACCOUNT ===");
+        
+        System.out.print("Choose a username: ");
+        String usernameInput = input.nextLine();
+        
+        if (validateUsername(usernameInput)) {
+            System.out.println("Username accepted.");
+            savedUsername = usernameInput;
+        } else {
+            System.out.println("Username invalid (needs '_' and max 5 characters).");
+            return;
+        }
+        
+        System.out.print("Create a password: ");
+        String passwordInput = input.nextLine();
+        
+        if (validatePassword(passwordInput)) {
+            System.out.println("Password accepted.");
+            savedPassword = passwordInput;
+        } else {
+            System.out.println("Password invalid (needs 8+ chars, uppercase, number, and special character).");
+            return;
+        }
+        
+        System.out.print("Enter cell phone starting with +27: ");
+        String phoneInput = input.nextLine();
+        
+        if (validatePhoneNumber(phoneInput)) {
+            System.out.println("Phone number saved.");
+            savedPhoneNumber = phoneInput;
+        } else {
+            System.out.println("Phone number invalid (must be +27 followed by 9 digits).");
+            return;
+        }
+        
+        System.out.println("Registration complete!\n");
+    }
+    
+    // Handle user login
+    public void signIn(Scanner input) {
+        
+        System.out.println("=== SIGN IN ===");
+        
+        System.out.print("Username: ");
+        String enteredUsername = input.nextLine();
+        
+        System.out.print("Password: ");
+        String enteredPassword = input.nextLine();
+        
+        if (enteredUsername.equals(savedUsername) && enteredPassword.equals(savedPassword)) {
+            System.out.println("Login successful! Welcome back.");
+        } else {
+            System.out.println("Invalid credentials. Please try again.");
+        }
+    }
+}
+
+public class AppRunner {
+    public static void main(String[] args) {
+        
+        Scanner scanner = new Scanner(System.in);
+        UserAccount account = new UserAccount();
+        
+        int option;
+        
+        do {
+            System.out.println("\n--- MAIN MENU ---");
+            System.out.println("1) Register");
+            System.out.println("2) Login");
+            System.out.println("3) Quit");
+            System.out.print("Select option: ");
+            
+            option = scanner.nextInt();
+            scanner.nextLine(); // consume newline
+            
+            switch (option) {
+                case 1:
+                    account.createAccount(scanner);
+                    break;
+                case 2:
+                    account.signIn(scanner);
+                    break;
+                case 3:
+                    System.out.println("Exiting. Have a great day!");
+                    break;
+                default:
+                    System.out.println("Invalid selection. Try again.");
+            }
+            
+        } while (option != 3);
+        
+        scanner.close();
+    }
+}
