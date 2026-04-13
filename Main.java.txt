@@ -1,0 +1,43 @@
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        AccountManager accountManager = new AccountManager();
+        
+        System.out.println("=== Registration ===\n");
+        
+        // Get username
+        System.out.print("Enter username (must contain _ and be â‰¤5 chars): ");
+        String username = scanner.nextLine();
+        System.out.println(accountManager.registerUsername(username));
+        
+        // Get password
+        System.out.print("\nEnter password (8+ chars, capital, number, special): ");
+        String password = scanner.nextLine();
+        System.out.println(accountManager.registerPassword(password));
+        
+        // Get phone number
+        System.out.print("\nEnter SA cell number (+27XXXXXXXXX): ");
+        String phone = scanner.nextLine();
+        System.out.println(accountManager.registerCellPhoneNumber(phone));
+        
+        // Get personal details
+        System.out.print("\nEnter first name: ");
+        String firstName = scanner.nextLine();
+        System.out.print("Enter last name: ");
+        String lastName = scanner.nextLine();
+        accountManager.setUserDetails(firstName, lastName);
+        
+        System.out.println("\n=== Registration Complete ===\n");
+        
+        // Login
+        System.out.println("=== Login ===\n");
+        System.out.print("Enter username: ");
+        String loginUser = scanner.nextLine();
+        System.out.print("Enter password: ");
+        String loginPass = scanner.nextLine();
+        
+        System.out.println(accountManager.returnLoginStatus(loginUser, loginPass));
+        
+        scanner.close();
+    }
+}
