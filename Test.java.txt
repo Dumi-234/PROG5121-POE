@@ -1,0 +1,280 @@
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.CsvSource;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class AccountManagerTest {
+    
+    private AccountManager accountManager;
+    
+    @BeforeEach
+    void setUp() {
+        accountManager = new AccountManager();
+    }
+    
+    // ========== checkUserName Tests ==========
+    
+    @Test
+    @DisplayName("Valid username with underscore and 5 chars should return true")
+    void testCheckUserName_ValidUsername_ReturnsTrue() {
+        assertTrue(accountManager.checkUserName("john_"));
+        assertTrue(accountManager.checkUserName("a_b_c"));
+        assertTrue(accountManager.checkUserName("usr_"));
+    }
+    
+    @Test
+    @DisplayName("Username without underscore should return false")
+    void testCheckUserName_NoUnderscore_ReturnsFalse() {
+        assertFalse(accountManager.checkUserName("john"));
+        assertFalse(accountManager.checkUserName("abcde"));
+        assertFalse(accountManager.checkUserName("test"));
+    }
+    
+    @Test
+    @DisplayName("Username longer than 5 chars should return false")
+    void testCheckUserName_TooLong_ReturnsFalse() {
+        assertFalse(accountManager.checkUserName("john_doe"));
+        assertFalse(accountManager.checkUserName("user_name"));
+        assertFalse(accountManager.checkUserName("a_b_c_d"));
+    }
+    
+    @Test
+    @DisplayName("Null username should return false")
+    void testCheckUserName_Null_ReturnsFalse() {
+        assertFalse(accountManager.checkUserName(null));
+    }
+    
+    @ParameterizedTest
+    @ValueSource(strings = {"a_", "ab_", "abc_", "abcd_", "abcde"})
+    @DisplayName("Parameterized test for various username lengths")
+    void testCheckUserName_Parameterized(String username) {
+        // Only usernames with underscore and length <=5 should pass
+        boolean expected = username.contains("_") && username.length() <= 5;
+        assertEquals(expected, accountManager.checkUserName(username));
+    }
+    
+    // ========== checkPasswordComplexity Tests ==========
+    
+    @Test
+    @DisplayName("Valid password with all requirements should return true")
+    void testCheckPasswordComplexity_ValidPassword_ReturnsTrue() {
+        assertTrue(accountManager.checkPasswordComplexity("Password123!"));
+        assertTrue(accountManager.checkPasswordComplexity("SecurePass#9"));
+        assertTrue(accountManager.checkPasswordComplexity("MyP@ssw0rd"));
+    }
+    
+    @Test
+    @DisplayName("Password too short should return false")
+    void testCheckPasswordComplexity_TooShort_ReturnsFalse() {
+        assertFalse(accountManager.checkPasswordComplexity("Pass1!"));
+        assertFalse(accountManager.checkPasswordComplexity("Abc12!"));
+        assertFalse(accountManager.checkPasswordComplexity("123"));
+    }
+    
+    @Test
+    @DisplayName("Password missing capital letter should return false")
+    void testCheckPasswordComplexity_NoCapital_ReturnsFalse() {
+        assertFalse(accountManager.checkPasswordComplexity("password123!"));
+        assertFalse(accountManager.checkPasswordComplexity("abc123!@#"));
+    }
+    
+    @Test
+    @DisplayName("Password missing number should return false")
+    void testCheckPasswordComplexity_NoNumber_ReturnsFalse() {
+        assertFalse(accountManager.checkPasswordComplexity("Password!"));
+        assertFalse(accountManager.checkPasswordComplexity("SecurePass#"));
+    }
+    
+    @Test
+    @DisplayName("Password missing special character should return false")
+    void testCheckPasswordComplexity_NoSpecialChar_ReturnsFalse() {
+        assertFalse(accountManager.checkPasswordComplexity("Password123"));
+        assertFalse(accountManager.checkPasswordComplexity("SecurePass9"));
+    }
+    
+    @Test
+    @DisplayName("Null password should return false")
+    void testCheckPasswordComplexity_Null_ReturnsFalse() {
+        assertFalse(accountManager.checkPasswordComplexity(null));
+    }
+    
+    // ========== checkCellPhoneNumber Tests ==========
+    
+    @Test
+    @DisplayName("Valid SA phone number with +27 should return true")
+    void testCheckCellPhoneNumber_ValidNumber_ReturnsTrue() {
+        assertTrue(accountManager.checkCellPhoneNumber("+27721234567"));
+        assertTrue(accountManager.checkCellPhoneNumber("+27831234567"));
+        assertTrue(accountManager.checkCellPhoneNumber("+27711234567"));
+    }
+    
+    @Test
+    @DisplayName("Phone number without +27 should return false")
+    void testCheckCellPhoneNumber_NoInternationalCode_ReturnsFalse() {
+        assertFalse(accountManager.checkCellPhoneNumber("0721234567"));
+        assertFalse(accountManager.checkCellPhoneNumber("712345678"));
+        assertFalse(accountManager.checkCellPhoneNumber("27721234567"));
+    }
+    
+    @Test
+    @DisplayName("Phone number with wrong length should return false")
+    void testCheckCellPhoneNumber_WrongLength_ReturnsFalse() {
+        assertFalse(accountManager.checkCellPhoneNumber("+2772123456")); // too short
+        assertFalse(accountManager.checkCellPhoneNumber("+277212345678")); // too long
+    }
+    
+    @Test
+    @DisplayName("Phone number with invalid characters should return false")
+    void testCheckCellPhoneNumber_InvalidCharacters_ReturnsFalse() {
+        assertFalse(accountManager.checkCellPhoneNumber("+27721ABCDEF"));
+        assertFalse(accountManager.checkCellPhoneNumber("+27 721234567"));
+        assertFalse(accountManager.checkCellPhoneNumber("+27-721234567"));
+    }
+    
+    @Test
+    @DisplayName("Null phone number should return false")
+    void testCheckCellPhoneNumber_Null_ReturnsFalse() {
+        assertFalse(accountManager.checkCellPhoneNumber(null));
+    }
+    
+    // ========== registerUsername Tests ==========
+    
+    @Test
+    @DisplayName("Registering valid username should return success message")
+    void testRegisterUsername_Valid_ReturnsSuccess() {
+        String result = accountManager.registerUsername("john_");
+        assertEquals("Username successfully captured.", result);
+    }
+    
+    @Test
+    @DisplayName("Registering invalid username should return error message")
+    void testRegisterUsername_Invalid_ReturnsError() {
+        String result = accountManager.registerUsername("john");
+        assertEquals("Username is not correctly formatted; please ensure that your username contains an underscore and is no more than five characters in length.", result);
+    }
+    
+    // ========== registerPassword Tests ==========
+    
+    @Test
+    @DisplayName("Registering valid password should return success message")
+    void testRegisterPassword_Valid_ReturnsSuccess() {
+        String result = accountManager.registerPassword("Password123!");
+        assertEquals("Password successfully captured.", result);
+    }
+    
+    @Test
+    @DisplayName("Registering invalid password should return error message")
+    void testRegisterPassword_Invalid_ReturnsError() {
+        String result = accountManager.registerPassword("weak");
+        assertEquals("Password is not correctly formatted; please ensure that the password contains at least eight characters, a capital letter, a number, and a special character.", result);
+    }
+    
+    // ========== registerCellPhoneNumber Tests ==========
+    
+    @Test
+    @DisplayName("Registering valid phone number should return success message")
+    void testRegisterCellPhoneNumber_Valid_ReturnsSuccess() {
+        String result = accountManager.registerCellPhoneNumber("+27721234567");
+        assertEquals("Cell phone number successfully added.", result);
+    }
+    
+    @Test
+    @DisplayName("Registering invalid phone number should return error message")
+    void testRegisterCellPhoneNumber_Invalid_ReturnsError() {
+        String result = accountManager.registerCellPhoneNumber("0721234567");
+        assertEquals("Cell phone number incorrectly formatted or does not contain international code.", result);
+    }
+    
+    // ========== loginUser Tests ==========
+    
+    @Test
+    @DisplayName("Login with correct credentials should return true")
+    void testLoginUser_CorrectCredentials_ReturnsTrue() {
+        accountManager.registerUsername("john_");
+        accountManager.registerPassword("Password123!");
+        assertTrue(accountManager.loginUser("john_", "Password123!"));
+    }
+    
+    @Test
+    @DisplayName("Login with incorrect username should return false")
+    void testLoginUser_WrongUsername_ReturnsFalse() {
+        accountManager.registerUsername("john_");
+        accountManager.registerPassword("Password123!");
+        assertFalse(accountManager.loginUser("jane_", "Password123!"));
+    }
+    
+    @Test
+    @DisplayName("Login with incorrect password should return false")
+    void testLoginUser_WrongPassword_ReturnsFalse() {
+        accountManager.registerUsername("john_");
+        accountManager.registerPassword("Password123!");
+        assertFalse(accountManager.loginUser("john_", "WrongPass123!"));
+    }
+    
+    @Test
+    @DisplayName("Login before registration should return false")
+    void testLoginUser_NoRegistration_ReturnsFalse() {
+        assertFalse(accountManager.loginUser("john_", "Password123!"));
+    }
+    
+    // ========== returnLoginStatus Tests ==========
+    
+    @Test
+    @DisplayName("Return login status with correct credentials should show welcome message")
+    void testReturnLoginStatus_Success_ReturnsWelcome() {
+        accountManager.registerUsername("john_");
+        accountManager.registerPassword("Password123!");
+        accountManager.setUserDetails("John", "Doe");
+        
+        String result = accountManager.returnLoginStatus("john_", "Password123!");
+        assertEquals("Welcome John, Doe it is great to see you again.", result);
+    }
+    
+    @Test
+    @DisplayName("Return login status with incorrect credentials should show error message")
+    void testReturnLoginStatus_Failure_ReturnsError() {
+        accountManager.registerUsername("john_");
+        accountManager.registerPassword("Password123!");
+        accountManager.setUserDetails("John", "Doe");
+        
+        String result = accountManager.returnLoginStatus("wrong", "wrong");
+        assertEquals("Username or password incorrect, please try again.", result);
+    }
+    
+    // ========== Integration Tests ==========
+    
+    @Test
+    @DisplayName("Complete registration and login flow")
+    void testCompleteRegistrationAndLoginFlow() {
+        // Registration
+        assertEquals("Username successfully captured.", 
+            accountManager.registerUsername("john_"));
+        assertEquals("Password successfully captured.", 
+            accountManager.registerPassword("Password123!"));
+        assertEquals("Cell phone number successfully added.", 
+            accountManager.registerCellPhoneNumber("+27721234567"));
+        
+        accountManager.setUserDetails("John", "Smith");
+        
+        // Login
+        assertTrue(accountManager.loginUser("john_", "Password123!"));
+        assertEquals("Welcome John, Smith it is great to see you again.",
+            accountManager.returnLoginStatus("john_", "Password123!"));
+    }
+    
+    @Test
+    @DisplayName("Test that invalid data is not stored")
+    void testInvalidDataNotStored() {
+        // Try to register with invalid data
+        accountManager.registerUsername("invalid");
+        accountManager.registerPassword("weak");
+        accountManager.registerCellPhoneNumber("123");
+        
+        // Login should fail because valid data wasn't stored
+        assertFalse(accountManager.loginUser("invalid", "weak"));
+    }
+}
