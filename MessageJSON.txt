@@ -1,0 +1,35 @@
+{
+  "sentMessages": [
+    {
+      "messageID": "4815162342",
+      "numMessagesSent": 1,
+      "recipientNumber": "+27718693002",
+      "message": "Hi Mike, can you join us for dinner tonight?",
+      "messageHash": "48:1:HIMIKE",
+      "timestamp": "Thu May 22 10:30:00 SAST 2026",
+      "status": "sent",
+      "wordCount": 9,
+      "charCount": 45
+    }
+  ],
+  "storedMessages": [
+    {
+      "messageID": "7392018456",
+      "numMessagesSent": 2,
+      "recipientNumber": "08575975889",
+      "message": "Hi Keegan, did you receive the payment?",
+      "messageHash": "73:2:HIKEEGAN",
+      "timestamp": "Thu May 22 11:00:00 SAST 2026",
+      "status": "stored",
+      "wordCount": 7,
+      "charCount": 38
+    }
+  ],
+  "messageCounter": 2,
+  "lastUpdated": "2026-05-22T11:00:00",
+  "statistics": {
+    "totalMessagesSent": 1,
+    "totalMessagesStored": 1,
+    "averageMessageLength": 41.5
+  }
+}
