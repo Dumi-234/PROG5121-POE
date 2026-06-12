@@ -1,43 +1,218 @@
+// Main.java
+import java.util.Scanner;
+
 public class Main {
+    private static Scanner scanner = new Scanner(System.in);
+    private static Login loginSystem = new Login();
+    private static boolean isLoggedIn = false;
+    
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        AccountManager accountManager = new AccountManager();
+        // Load saved messages
+        Message.loadMessagesFromFile();
         
-        System.out.println("=== Registration ===\n");
+        System.out.println("Welcome to QuickChat");
+        System.out.println("====================\n");
         
-        // Get username
-        System.out.print("Enter username (must contain _ and be â‰¤5 chars): ");
+        // Main menu loop before login
+        while (!isLoggedIn) {
+            displayMainMenu();
+        }
+        
+        // After successful login, run messaging app
+        if (isLoggedIn) {
+            runMessagingApp();
+        }
+    }
+    
+    private static void displayMainMenu() {
+        System.out.println("Please login or register to continue:");
+        System.out.println("1) Login");
+        System.out.println("2) Register");
+        System.out.println("3) Quit");
+        System.out.print("Choose option: ");
+        
+        int choice = scanner.nextInt();
+        scanner.nextLine();
+        
+        switch (choice) {
+            case 1:
+                login();
+                break;
+            case 2:
+                register();
+                break;
+            case 3:
+                System.out.println("Goodbye!");
+                System.exit(0);
+                break;
+            default:
+                System.out.println("Invalid option. Try again.\n");
+        }
+    }
+    
+    private static void login() {
+        System.out.println("\n=== LOGIN ===");
+        System.out.print("Username: ");
         String username = scanner.nextLine();
-        System.out.println(accountManager.registerUsername(username));
+        System.out.print("Password: ");
+        String password = scanner.nextLine();
         
-        // Get password
+        String result = loginSystem.returnLoginStatus(username, password);
+        System.out.println(result);
+        
+        if (result.equals("Login successful! Welcome back.")) {
+            isLoggedIn = true;
+        }
+    }
+    
+    private static void register() {
+        System.out.println("\n=== REGISTRATION ===");
+        
+        System.out.print("Enter username (must contain _ and be ≤5 chars): ");
+        String username = scanner.nextLine();
+        System.out.println(loginSystem.registerUsername(username));
+        
         System.out.print("\nEnter password (8+ chars, capital, number, special): ");
         String password = scanner.nextLine();
-        System.out.println(accountManager.registerPassword(password));
+        System.out.println(loginSystem.registerPassword(password));
         
-        // Get phone number
         System.out.print("\nEnter SA cell number (+27XXXXXXXXX): ");
         String phone = scanner.nextLine();
-        System.out.println(accountManager.registerCellPhoneNumber(phone));
+        System.out.println(loginSystem.registerCellPhoneNumber(phone));
         
-        // Get personal details
         System.out.print("\nEnter first name: ");
         String firstName = scanner.nextLine();
         System.out.print("Enter last name: ");
         String lastName = scanner.nextLine();
-        accountManager.setUserDetails(firstName, lastName);
+        loginSystem.setUserDetails(firstName, lastName);
         
         System.out.println("\n=== Registration Complete ===\n");
+    }
+    
+    private static void runMessagingApp() {
+        int choice;
+        do {
+            System.out.println("\n=== QUICKCHAT MENU ===");
+            System.out.println("1) Send Messages");
+            System.out.println("2) Show recently sent messages");
+            System.out.println("3) Stored Messages");  // New menu option
+            System.out.println("4) Quit");
+            System.out.print("Choose option: ");
+            
+            choice = scanner.nextInt();
+            scanner.nextLine();
+            
+            switch (choice) {
+                case 1:
+                    sendNewMessage();
+                    break;
+                case 2:
+                    System.out.println("Coming Soon.");
+                    break;
+                case 3:
+                    storedMessagesMenu();
+                    break;
+                case 4:
+                    System.out.println("Thank you for using QuickChat. Goodbye!");
+                    break;
+                default:
+                    System.out.println("Invalid option. Please try again.");
+            }
+        } while (choice != 4);
+    }
+    
+    private static void sendNewMessage() {
+        System.out.print("\nHow many messages do you want to enter? ");
+        int numMessages = scanner.nextInt();
+        scanner.nextLine();
         
-        // Login
-        System.out.println("=== Login ===\n");
-        System.out.print("Enter username: ");
-        String loginUser = scanner.nextLine();
-        System.out.print("Enter password: ");
-        String loginPass = scanner.nextLine();
-        
-        System.out.println(accountManager.returnLoginStatus(loginUser, loginPass));
-        
-        scanner.close();
+        for (int i = 0; i < numMessages; i++) {
+            System.out.println("\n--- Message " + (i + 1) + " ---");
+            
+            System.out.print("Enter recipient number (+27XXXXXXXXX): ");
+            String recipient = scanner.nextLine();
+            
+            System.out.print("Enter your message: ");
+            String content = scanner.nextLine();
+            
+            String validation = Message.validateMessageLength(content);
+            System.out.println(validation);
+            
+            if (validation.startsWith("Message ready")) {
+                Message msg = new Message(recipient, content);
+                System.out.println("Message Hash: " + msg.getMessageHash());
+                System.out.println("Message ID: " + msg.getMessageID());
+                
+                System.out.println("\n1) Send");
+                System.out.println("2) Store");
+                System.out.println("3) Disregard");
+                System.out.print("Choose option: ");
+                int option = scanner.nextInt();
+                scanner.nextLine();
+                
+                String result = msg.sentMessage(option);
+                System.out.println(result);
+            }
+        }
+    }
+    
+    private static void storedMessagesMenu() {
+        int choice;
+        do {
+            System.out.println("\n=== STORED MESSAGES MENU ===");
+            System.out.println("1) Display sender and recipient of all stored messages");
+            System.out.println("2) Display the longest stored message");
+            System.out.println("3) Search for a message ID");
+            System.out.println("4) Search for messages by recipient");
+            System.out.println("5) Delete a message using message hash");
+            System.out.println("6) Display full stored messages report");
+            System.out.println("7) Populate test data");
+            System.out.println("8) Display all arrays (Test)");
+            System.out.println("9) Return to main menu");
+            System.out.print("Choose option: ");
+            
+            choice = scanner.nextInt();
+            scanner.nextLine();
+            
+            switch (choice) {
+                case 1:
+                    System.out.println(Message.displayStoredMessagesSenderRecipient());
+                    break;
+                case 2:
+                    System.out.println(Message.displayLongestStoredMessage());
+                    break;
+                case 3:
+                    System.out.print("Enter Message ID to search: ");
+                    String messageID = scanner.nextLine();
+                    System.out.println(Message.searchByMessageID(messageID));
+                    break;
+                case 4:
+                    System.out.print("Enter recipient number: ");
+                    String recipient = scanner.nextLine();
+                    System.out.println(Message.searchMessagesByRecipient(recipient));
+                    break;
+                case 5:
+                    System.out.print("Enter Message Hash to delete: ");
+                    String hash = scanner.nextLine();
+                    System.out.println(Message.deleteMessageByHash(hash));
+                    break;
+                case 6:
+                    System.out.println(Message.displayStoredMessagesReport());
+                    break;
+                case 7:
+                    Message.populateTestData();
+                    System.out.println("Test data populated successfully!");
+                    System.out.println(Message.displayAllArrays());
+                    break;
+                case 8:
+                    System.out.println(Message.displayAllArrays());
+                    break;
+                case 9:
+                    System.out.println("Returning to main menu...");
+                    break;
+                default:
+                    System.out.println("Invalid option.");
+            }
+        } while (choice != 9);
     }
 }
