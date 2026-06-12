@@ -1,0 +1,400 @@
+// MessageTestPart3.java
+import org.junit.jupiter.api.*;
+import static org.junit.jupiter.api.Assertions.*;
+import java.util.List;
+
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+public class MessageTestPart3 {
+    
+    @BeforeEach
+    void setUp() {
+        // Reset all arrays before each test
+        Message.resetForTesting();
+        // Populate test data
+        Message.populateTestData();
+    }
+    
+    @AfterEach
+    void tearDown() {
+        Message.resetForTesting();
+    }
+    
+    // ==================== TEST 1: Sent Messages Array Correctly Populated ====================
+    
+    @Test
+    @Order(1)
+    void testSentMessagesArrayContainsExpectedData() {
+        List<Message> sentMessages = Message.getSentMessages();
+        
+        // Test Data Message 1 should be sent
+        // Test Data Message 4 should be sent
+        assertEquals(2, sentMessages.size(), "Should have 2 sent messages");
+        
+        boolean foundMessage1 = false;
+        boolean foundMessage4 = false;
+        
+        for (Message msg : sentMessages) {
+            if (msg.getMessage().equals("Did you get the cake?")) {
+                foundMessage1 = true;
+                assertEquals("+27834557896", msg.getRecipientNumber());
+            }
+            if (msg.getMessage().equals("It is dinner time!")) {
+                foundMessage4 = true;
+                assertEquals("0838884567", msg.getRecipientNumber());
+            }
+        }
+        
+        assertTrue(foundMessage1, "Message 1 should be in sent messages");
+        assertTrue(foundMessage4, "Message 4 should be in sent messages");
+    }
+    
+    @Test
+    @Order(2)
+    void testStoredMessagesArrayContainsExpectedData() {
+        List<Message> storedMessages = Message.getStoredMessages();
+        
+        // Test Data Message 2 should be stored
+        // Test Data Message 5 should be stored
+        assertEquals(2, storedMessages.size(), "Should have 2 stored messages");
+        
+        boolean foundMessage2 = false;
+        boolean foundMessage5 = false;
+        
+        for (Message msg : storedMessages) {
+            if (msg.getMessage().equals("Where are you? You are late! I have asked you to be on time.")) {
+                foundMessage2 = true;
+                assertEquals("+27838884567", msg.getRecipientNumber());
+            }
+            if (msg.getMessage().equals("Ok, I am leaving without you.")) {
+                foundMessage5 = true;
+                assertEquals("+27838884567", msg.getRecipientNumber());
+            }
+        }
+        
+        assertTrue(foundMessage2, "Message 2 should be in stored messages");
+        assertTrue(foundMessage5, "Message 5 should be in stored messages");
+    }
+    
+    @Test
+    @Order(3)
+    void testDisregardedMessagesArrayContainsExpectedData() {
+        List<Message> disregardedMessages = Message.getDisregardedMessages();
+        
+        // Test Data Message 3 should be disregarded
+        assertEquals(1, disregardedMessages.size(), "Should have 1 disregarded message");
+        
+        Message msg = disregardedMessages.get(0);
+        assertEquals("Yohoooo, I am at your gate.", msg.getMessage());
+        assertEquals("+27834484567", msg.getRecipientNumber());
+    }
+    
+    @Test
+    @Order(4)
+    void testMessageHashesArrayContainsExpectedData() {
+        List<String> messageHashes = Message.getMessageHashes();
+        
+        // Should have hashes for Message 1, 2, 4, 5 (Message 3 is disregarded, no hash)
+        assertEquals(4, messageHashes.size(), "Should have 4 message hashes");
+    }
+    
+    @Test
+    @Order(5)
+    void testMessageIDsArrayContainsExpectedData() {
+        List<String> messageIDs = Message.getMessageIDs();
+        
+        // Should have IDs for Message 1, 2, 4, 5
+        assertEquals(4, messageIDs.size(), "Should have 4 message IDs");
+        
+        // Verify each ID is exactly 10 characters
+        for (String id : messageIDs) {
+            assertEquals(10, id.length(), "Each message ID should be 10 characters long");
+        }
+    }
+    
+    // ==================== TEST 2: Display Longest Message ====================
+    
+    @Test
+    @Order(6)
+    void testDisplayLongestStoredMessage() {
+        String result = Message.displayLongestStoredMessage();
+        
+        // The longest message should be Message 2
+        assertTrue(result.contains("Where are you? You are late! I have asked you to be on time."));
+        assertTrue(result.contains("Longest stored message"));
+    }
+    
+    @Test
+    @Order(7)
+    void testDisplayLongestStoredMessageWhenEmpty() {
+        Message.resetForTesting();
+        String result = Message.displayLongestStoredMessage();
+        assertEquals("No stored messages found.", result);
+    }
+    
+    // ==================== TEST 3: Search for Message ID ====================
+    
+    @Test
+    @Order(8)
+    void testSearchForExistingMessageID() {
+        // Get a message ID from stored messages
+        List<Message> storedMessages = Message.getStoredMessages();
+        String messageID = storedMessages.get(0).getMessageID();
+        
+        String result = Message.searchByMessageID(messageID);
+        
+        assertTrue(result.contains("Message ID: " + messageID));
+        assertTrue(result.contains("Recipient:"));
+        assertTrue(result.contains("Message:"));
+    }
+    
+    @Test
+    @Order(9)
+    void testSearchForNonExistentMessageID() {
+        String result = Message.searchByMessageID("9999999999");
+        assertEquals("Message ID: 9999999999 not found.", result);
+    }
+    
+    // ==================== TEST 4: Search Messages by Recipient ====================
+    
+    @Test
+    @Order(10)
+    void testSearchMessagesByRecipientWithMultipleMessages() {
+        // Recipient +27838884567 has Message 2 (stored) and Message 5 (stored)
+        String result = Message.searchMessagesByRecipient("+27838884567");
+        
+        assertTrue(result.contains("Where are you? You are late! I have asked you to be on time."));
+        assertTrue(result.contains("Ok, I am leaving without you."));
+        assertTrue(result.contains("Status: stored"));
+    }
+    
+    @Test
+    @Order(11)
+    void testSearchMessagesByRecipientWithSingleMessage() {
+        // Recipient +27834557896 has Message 1 (sent)
+        String result = Message.searchMessagesByRecipient("+27834557896");
+        
+        assertTrue(result.contains("Did you get the cake?"));
+        assertTrue(result.contains("Status: sent"));
+    }
+    
+    @Test
+    @Order(12)
+    void testSearchMessagesByRecipientWithNoMessages() {
+        String result = Message.searchMessagesByRecipient("+27999999999");
+        assertEquals("No messages found for recipient: +27999999999", result);
+    }
+    
+    @Test
+    @Order(13)
+    void testSearchMessagesByRecipientWithTestDataMessage4() {
+        // Test Data Message 4 has recipient 0838884567 (without +)
+        String result = Message.searchMessagesByRecipient("0838884567");
+        
+        assertTrue(result.contains("It is dinner time!"));
+    }
+    
+    // ==================== TEST 5: Delete Message Using Message Hash ====================
+    
+    @Test
+    @Order(14)
+    void testDeleteMessageByValidHash() {
+        // Get a message hash from stored messages
+        List<Message> storedMessages = Message.getStoredMessages();
+        String messageHash = storedMessages.get(0).getMessageHash();
+        String messageContent = storedMessages.get(0).getMessage();
+        
+        String result = Message.deleteMessageByHash(messageHash);
+        
+        assertEquals("Message: \"" + messageContent + "\" successfully deleted.", result);
+        
+        // Verify message is actually deleted
+        List<Message> updatedStoredMessages = Message.getStoredMessages();
+        assertEquals(1, updatedStoredMessages.size(), "Should have 1 stored message left");
+    }
+    
+    @Test
+    @Order(15)
+    void testDeleteMessageByInvalidHash() {
+        String result = Message.deleteMessageByHash("INVALID:HASH:123");
+        
+        assertEquals("Message with hash: INVALID:HASH:123 not found.", result);
+    }
+    
+    @Test
+    @Order(16)
+    void testDeleteMessageByHashFromSentMessages() {
+        // Get a message hash from sent messages
+        List<Message> sentMessages = Message.getSentMessages();
+        String messageHash = sentMessages.get(0).getMessageHash();
+        String messageContent = sentMessages.get(0).getMessage();
+        
+        int originalSize = Message.getSentMessages().size();
+        String result = Message.deleteMessageByHash(messageHash);
+        
+        assertEquals("Message: \"" + messageContent + "\" successfully deleted.", result);
+        assertEquals(originalSize - 1, Message.getSentMessages().size(), "Sent messages should decrease by 1");
+    }
+    
+    // ==================== TEST 6: Display Report ====================
+    
+    @Test
+    @Order(17)
+    void testDisplayStoredMessagesReport() {
+        String report = Message.displayStoredMessagesReport();
+        
+        // Report should contain headers
+        assertTrue(report.contains("STORED MESSAGES REPORT"));
+        assertTrue(report.contains("Message Hash"));
+        assertTrue(report.contains("Recipient"));
+        assertTrue(report.contains("Message"));
+        assertTrue(report.contains("Message ID"));
+        
+        // Report should contain stored message data
+        assertTrue(report.contains("Where are you? You are late! I have asked you to be on time."));
+        assertTrue(report.contains("Ok, I am leaving without you."));
+        assertTrue(report.contains("+27838884567"));
+        
+        // Report should show total count
+        assertTrue(report.contains("Total stored messages: 2"));
+    }
+    
+    @Test
+    @Order(18)
+    void testDisplayStoredMessagesReportWhenEmpty() {
+        Message.resetForTesting();
+        String report = Message.displayStoredMessagesReport();
+        assertEquals("No stored messages to display.", report);
+    }
+    
+    // ==================== TEST 7: Display Sender and Recipient ====================
+    
+    @Test
+    @Order(19)
+    void testDisplayStoredMessagesSenderRecipient() {
+        String result = Message.displayStoredMessagesSenderRecipient();
+        
+        assertTrue(result.contains("STORED MESSAGES - SENDER & RECIPIENT"));
+        assertTrue(result.contains("Recipient: +27838884567"));
+        assertTrue(result.contains("Where are you? You are late! I have asked you to be on time."));
+        assertTrue(result.contains("Ok, I am leaving without you."));
+    }
+    
+    @Test
+    @Order(20)
+    void testDisplayStoredMessagesSenderRecipientWhenEmpty() {
+        Message.resetForTesting();
+        String result = Message.displayStoredMessagesSenderRecipient();
+        assertEquals("No stored messages found.", result);
+    }
+    
+    // ==================== ADDITIONAL VERIFICATION TESTS ====================
+    
+    @Test
+    @Order(21)
+    void testMessage1DataCorrect() {
+        List<Message> sentMessages = Message.getSentMessages();
+        
+        for (Message msg : sentMessages) {
+            if (msg.getMessage().equals("Did you get the cake?")) {
+                assertEquals("+27834557896", msg.getRecipientNumber());
+                assertEquals("sent", msg.getStatus());
+                assertNotNull(msg.getMessageHash());
+                assertNotNull(msg.getMessageID());
+                return;
+            }
+        }
+        fail("Message 1 not found in sent messages");
+    }
+    
+    @Test
+    @Order(22)
+    void testMessage2DataCorrect() {
+        List<Message> storedMessages = Message.getStoredMessages();
+        
+        for (Message msg : storedMessages) {
+            if (msg.getMessage().equals("Where are you? You are late! I have asked you to be on time.")) {
+                assertEquals("+27838884567", msg.getRecipientNumber());
+                assertEquals("stored", msg.getStatus());
+                assertNotNull(msg.getMessageHash());
+                assertNotNull(msg.getMessageID());
+                return;
+            }
+        }
+        fail("Message 2 not found in stored messages");
+    }
+    
+    @Test
+    @Order(23)
+    void testMessage3DataCorrect() {
+        List<Message> disregardedMessages = Message.getDisregardedMessages();
+        
+        assertEquals(1, disregardedMessages.size());
+        Message msg = disregardedMessages.get(0);
+        assertEquals("Yohoooo, I am at your gate.", msg.getMessage());
+        assertEquals("+27834484567", msg.getRecipientNumber());
+        assertEquals("disregarded", msg.getStatus());
+    }
+    
+    @Test
+    @Order(24)
+    void testMessage4DataCorrect() {
+        List<Message> sentMessages = Message.getSentMessages();
+        
+        for (Message msg : sentMessages) {
+            if (msg.getMessage().equals("It is dinner time!")) {
+                assertEquals("0838884567", msg.getRecipientNumber());
+                assertEquals("sent", msg.getStatus());
+                return;
+            }
+        }
+        fail("Message 4 not found in sent messages");
+    }
+    
+    @Test
+    @Order(25)
+    void testMessage5DataCorrect() {
+        List<Message> storedMessages = Message.getStoredMessages();
+        
+        for (Message msg : storedMessages) {
+            if (msg.getMessage().equals("Ok, I am leaving without you.")) {
+                assertEquals("+27838884567", msg.getRecipientNumber());
+                assertEquals("stored", msg.getStatus());
+                return;
+            }
+        }
+        fail("Message 5 not found in stored messages");
+    }
+    
+    // ==================== TEST 8: Delete Message Functionality ====================
+    
+    @Test
+    @Order(26)
+    void testDeleteMessageByHashThenVerifyRemovedFromAllArrays() {
+        // Get a stored message's hash
+        List<Message> storedMessages = Message.getStoredMessages();
+        String messageHash = storedMessages.get(0).getMessageHash();
+        
+        // Get original sizes
+        int originalStoredSize = Message.getStoredMessages().size();
+        int originalHashesSize = Message.getMessageHashes().size();
+        
+        // Delete the message
+        Message.deleteMessageByHash(messageHash);
+        
+        // Verify removed from stored messages
+        assertEquals(originalStoredSize - 1, Message.getStoredMessages().size());
+        
+        // Verify removed from hashes array
+        assertEquals(originalHashesSize - 1, Message.getMessageHashes().size());
+        
+        // Verify the hash is no longer in the list
+        boolean hashStillExists = false;
+        for (String hash : Message.getMessageHashes()) {
+            if (hash.equals(messageHash)) {
+                hashStillExists = true;
+                break;
+            }
+        }
+        assertFalse(hashStillExists, "Hash should be removed from messageHashes array");
+    }
+}

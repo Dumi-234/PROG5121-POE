@@ -1,0 +1,128 @@
+JSON File
+{
+  "sentMessages": [
+    {
+      "messageID": "4815162342",
+      "numMessagesSent": 1,
+      "recipientNumber": "+27834557896",
+      "message": "Did you get the cake?",
+      "messageHash": "48:1:DIDCAKE",
+      "status": "sent",
+      "timestamp": "2026-06-11T10:30:00",
+      "wordCount": 5,
+      "charCount": 21
+    },
+    {
+      "messageID": "7392018456",
+      "numMessagesSent": 4,
+      "recipientNumber": "0838884567",
+      "message": "It is dinner time!",
+      "messageHash": "73:4:ITTIME",
+      "status": "sent",
+      "timestamp": "2026-06-11T11:45:00",
+      "wordCount": 4,
+      "charCount": 18
+    }
+  ],
+  "storedMessages": [
+    {
+      "messageID": "5629183470",
+      "numMessagesSent": 2,
+      "recipientNumber": "+27838884567",
+      "message": "Where are you? You are late! I have asked you to be on time.",
+      "messageHash": "56:2:WHERETIME",
+      "status": "stored",
+      "timestamp": "2026-06-11T10:45:00",
+      "wordCount": 13,
+      "charCount": 58
+    },
+    {
+      "messageID": "8147253690",
+      "numMessagesSent": 5,
+      "recipientNumber": "+27838884567",
+      "message": "Ok, I am leaving without you.",
+      "messageHash": "81:5:OKYOU",
+      "status": "stored",
+      "timestamp": "2026-06-11T12:00:00",
+      "wordCount": 6,
+      "charCount": 28
+    }
+  ],
+  "disregardedMessages": [
+    {
+      "messageID": "3075192864",
+      "numMessagesSent": 3,
+      "recipientNumber": "+27834484567",
+      "message": "Yohoooo, I am at your gate.",
+      "messageHash": "30:3:YOHOOGATE",
+      "status": "disregarded",
+      "timestamp": "2026-06-11T11:00:00",
+      "wordCount": 6,
+      "charCount": 26
+    }
+  ],
+  "messageHashes": [
+    "48:1:DIDCAKE",
+    "56:2:WHERETIME",
+    "73:4:ITTIME",
+    "81:5:OKYOU"
+  ],
+  "messageIDs": [
+    "4815162342",
+    "5629183470",
+    "7392018456",
+    "8147253690"
+  ],
+  "messageCounter": 5,
+  "lastUpdated": "2026-06-11T12:00:00",
+  "statistics": {
+    "totalMessagesSent": 2,
+    "totalMessagesStored": 2,
+    "totalMessagesDisregarded": 1,
+    "averageMessageLength": 30.2,
+    "longestMessage": "Where are you? You are late! I have asked you to be on time.",
+    "shortestMessage": "It is dinner time!"
+  },
+  "testDataMapping": {
+    "message1": {
+      "description": "Test Data Message 1",
+      "recipient": "+27834557896",
+      "message": "Did you get the cake?",
+      "flag": "Sent",
+      "arrayLocation": "sentMessages",
+      "index": 0
+    },
+    "message2": {
+      "description": "Test Data Message 2",
+      "recipient": "+27838884567",
+      "message": "Where are you? You are late! I have asked you to be on time.",
+      "flag": "Stored",
+      "arrayLocation": "storedMessages",
+      "index": 0
+    },
+    "message3": {
+      "description": "Test Data Message 3",
+      "recipient": "+27834484567",
+      "message": "Yohoooo, I am at your gate.",
+      "flag": "Disregard",
+      "arrayLocation": "disregardedMessages",
+      "index": 0
+    },
+    "message4": {
+      "description": "Test Data Message 4",
+      "recipient": "0838884567",
+      "message": "It is dinner time!",
+      "flag": "Sent",
+      "arrayLocation": "sentMessages",
+      "index": 1
+    },
+    "message5": {
+      "description": "Test Data Message 5",
+      "recipient": "+27838884567",
+      "message": "Ok, I am leaving without you.",
+      "flag": "Stored",
+      "arrayLocation": "storedMessages",
+      "index": 1
+    }
+  }
+}
